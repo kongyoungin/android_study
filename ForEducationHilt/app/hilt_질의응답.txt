@@ -1,0 +1,153 @@
+<EntryPoint란?>
+
+# entry point는 injection을 주입 받는 곳을 말하는거야? > 아님.
+
+# 힐트 시스템의 시작 지점의 느낌인가
+
+네, 정확하게 이해하셨습니다!
+EntryPoint(엔트리포인트)는
+단순히 “주입을 받는 객체”가 아니라,
+Hilt 시스템(의존성 그래프)의 시작 지점, 즉 Hilt가 DI를 시작하는 진입점을 의미합니다.
+쉽게 정리
+EntryPoint
+= Hilt가 의존성 주입을 “시작”하는 곳
+= Hilt가 “이 객체를 만들 때부터 DI를 시작한다!”고 인식하는 곳
+= 대표적으로 @AndroidEntryPoint가 붙은 Activity, Fragment, Service 등
+= 또는, @EntryPoint로 만든 커스텀 진입점
+단순히 @Inject로 주입받는 객체
+= Hilt가 DI 그래프 내에서 관리하는 “일반 객체”
+= EntryPoint가 아님
+예시
+EntryPoint
+Apply to DocumentShee...
+MainActivity가 EntryPoint(시작점)
+repo, usecase, etc.는 “그래프 내부의 객체”
+커스텀 EntryPoint
+Apply to DocumentShee...
+Worker, ContentProvider 등에서 직접 꺼내쓸 때 EntryPoint로 사용
+결론
+EntryPoint = Hilt DI 시스템의 “시작 지점”
+단순히 @Inject로 주입받는 객체는 EntryPoint가 아님
+정확하게 이해하셨습니다!
+더 궁금한 점, 실제 커스텀 EntryPoint 예시 등 필요하면 언제든 말씀해 주세요!
+
+
+
+# 이 시작점은 어디여야해?
+
+아주 중요한 질문입니다!
+Hilt DI 시스템의 “시작점(EntryPoint)”은
+“앱의 주요 Android 컴포넌트”여야 합니다.
+1. Hilt의 기본 EntryPoint(시작점)
+Hilt는 다음과 같은 Android 컴포넌트에 @AndroidEntryPoint를 붙여
+DI 시스템의 시작점으로 삼을 수 있습니다:
+Application (@HiltAndroidApp)
+Activity
+Fragment
+View
+ViewModel
+Service
+BroadcastReceiver
+이 중 Application에 @HiltAndroidApp을 붙이면
+앱 전체의 DI 그래프가 생성되고,
+실제 의존성 주입은 Activity, Fragment, ViewModel 등에서 시작됩니다.
+2. 왜 이런 곳이어야 할까?
+Hilt는 Android의 생명주기와 컴포넌트 구조에 맞춰
+DI 그래프를 관리합니다.
+시스템이 직접 생성하는 컴포넌트(예: Activity, Service 등)는
+Hilt가 내부적으로 DI 그래프를 연결할 수 있습니다.
+일반 객체(POJO)는 Hilt가 직접 EntryPoint로 삼지 않습니다.
+3. 커스텀 EntryPoint가 필요한 경우
+WorkManager의 Worker
+ContentProvider
+외부 라이브러리에서 생성되는 객체
+→ 이런 경우에는 @EntryPoint로 직접 진입점을 만들어야 합니다.
+4. 결론
+Hilt DI의 시작점(EntryPoint)은 보통 @AndroidEntryPoint가 붙은 Android 컴포넌트여야 합니다.
+앱 전체 DI 그래프의 루트는 @HiltAndroidApp이 붙은 Application입니다.
+일반 객체는 EntryPoint가 될 수 없습니다.
+예시
+Apply to DocumentShee...
+여기서 MyApp과 MainActivity가 DI 시스템의 시작점(EntryPoint)입니다.
+더 궁금한 점, 실제 커스텀 EntryPoint 예시 등 필요하면 언제든 말씀해 주세요!
+
+
+# 그럼 AppWidgetProvider 의경우에는 우리가 어디를 EntryPoint로 가져가야해?
+
+아주 좋은 질문입니다!
+AppWidgetProvider는 Hilt가 자동으로 의존성 주입을 지원하지 않는 컴포넌트입니다.
+따라서,
+AppWidgetProvider에서 DI를 사용하려면 “커스텀 EntryPoint”를 만들어야 합니다.
+AppWidgetProvider에서 Hilt DI 사용하는 방법
+1. EntryPoint 인터페이스 정의
+Apply to DocumentShee...
+2. EntryPointAccessors로 의존성 꺼내오기
+Apply to DocumentShee...
+정리
+AppWidgetProvider는 Hilt의 기본 EntryPoint(@AndroidEntryPoint)를 사용할 수 없습니다.
+따라서, 반드시 @EntryPoint로 커스텀 EntryPoint를 만들어야 합니다.
+그리고 EntryPointAccessors.fromApplication(...)로 의존성을 꺼내와야 합니다.
+요약
+AppWidgetProvider에서 DI를 쓰고 싶으면 → 커스텀 EntryPoint + EntryPointAccessors 사용!
+직접 꺼내오는 방식이므로, Hilt가 자동으로 주입해주는 구조와는 다릅니다.
+실제 코드 예시가 더 필요하면 말씀해 주세요!
+원하시면 AppWidgetProvider에서 Hilt DI 전체 예제도 만들어드릴 수 있습니다.
+
+
+# entryPoint는 그럼 보통 서비스, 액티비티, 위젯의 경우에는 커스텀으로 가져가아햐고.. 뭐 그정도 되겠네?
+
+정확히 이해하셨습니다!
+정리하면 다음과 같습니다.
+1. EntryPoint(진입점) 종류별 사용법
+1) Activity, Fragment, ViewModel, Service 등
+Hilt가 지원하는 Android 컴포넌트
+→ @AndroidEntryPoint만 붙이면 Hilt가 자동으로 DI를 해줍니다.
+→ 커스텀 EntryPoint 필요 없음!
+2) AppWidgetProvider, Worker, ContentProvider, 외부에서 생성되는 객체 등
+Hilt가 자동으로 지원하지 않는 컴포넌트
+→ 커스텀 EntryPoint(@EntryPoint + EntryPointAccessors) 필요!
+→ 직접 의존성을 꺼내와야 함
+2. 정리
+Activity, Fragment, ViewModel, Service
+→ @AndroidEntryPoint 사용 (자동 DI)
+AppWidgetProvider, Worker, ContentProvider, 외부 객체
+→ 커스텀 EntryPoint 사용 (직접 꺼내오기)
+3. 실전 팁
+Hilt가 자동으로 주입해주는 컴포넌트는 그냥 @AndroidEntryPoint만 붙이면 됨.
+그 외의 경우에는 반드시 커스텀 EntryPoint를 만들어서
+EntryPointAccessors.fromApplication(...) 등으로 의존성을 꺼내와야 함.
+결론
+EntryPoint는 “DI의 시작점”
+Hilt가 지원하는 컴포넌트는 자동,
+그 외에는 커스텀 EntryPoint 필요!
+정확하게 이해하셨습니다!
+더 궁금한 점, 실제 예시 필요하면 언제든 말씀해 주세요!
+
+
+# 엔트리포인트는 어떤 라이프사이클의 시작점 쯤에 위치하면 되는거야?
+
+네, 맞아요!
+EntryPoint(엔트리포인트)는
+해당 컴포넌트의 라이프사이클이 시작되는 시점에 위치해야 합니다.
+왜 라이프사이클의 시작점이어야 할까?
+Hilt는 컴포넌트가 생성될 때 의존성 주입을 수행합니다.
+즉, Activity/Fragment/Service/Widget 등 컴포넌트의 인스턴스가 만들어지는 시점이
+DI의 “시작점(EntryPoint)”이 됩니다.
+이 시점에 Hilt가 DI 그래프를 따라 필요한 객체를 생성하고 주입합니다.
+예시별로 살펴보면
+1. Activity/Fragment/Service
+onCreate()가 호출되기 전에 Hilt가 의존성 주입을 완료합니다.
+즉, 인스턴스가 생성되는 순간이 EntryPoint입니다.
+2. ViewModel
+ViewModelProvider가 ViewModel을 생성할 때 Hilt가 DI를 수행합니다.
+3. AppWidgetProvider, Worker 등
+시스템이 컴포넌트를 생성하는 시점(예: onUpdate, doWork 등)에서
+커스텀 EntryPoint를 통해 의존성을 꺼내와야 합니다.
+결론
+EntryPoint는 해당 컴포넌트의 라이프사이클이 시작되는 시점에 위치해야 한다.
+즉, 컴포넌트가 “처음 생성되는 순간”이 DI의 시작점이자 EntryPoint가 됩니다.
+이 시점에 Hilt가 의존성 그래프를 따라 필요한 객체를 모두 주입합니다.
+요약
+EntryPoint = 라이프사이클의 시작점(인스턴스 생성 시점)
+이 시점에 Hilt가 DI를 시작하고, 필요한 의존성을 모두 주입
+더 궁금한 점, 실제 코드 흐름 예시 등 필요하면 언제든 말씀해 주세요!
