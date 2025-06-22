@@ -10,14 +10,13 @@ class DocumentSheetFactoryTest {
     fun `팩토리는 올바른 제목과 테마로 DocumentSheet를 생성해야 한다`() {
         // Given
         val factory = DocumentSheetFactory()
-        val testTitle = "팩토리 테스트"
         val testTheme = ThemeA()
 
         // When
-        val documentSheet = factory.create(testTitle, testTheme)
+        val documentSheet = factory.create(testTheme)
 
         // Then
-        assertEquals(testTitle, documentSheet.title)
+        assertEquals("문서 시트", documentSheet.title)
         assertEquals(testTheme, documentSheet.theme)
         assertEquals("테마 A", documentSheet.theme.name)
     }

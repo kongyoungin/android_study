@@ -9,14 +9,13 @@ class ExcelSheetTest {
     @Test
     fun `ExcelSheet는 올바른 제목과 테마를 가져야 한다`() {
         // Given
-        val testTitle = "테스트 엑셀"
         val testTheme = ThemeB()
 
         // When
-        val excelSheet = ExcelSheet(testTitle, testTheme)
+        val excelSheet = ExcelSheet(testTheme)
 
         // Then
-        assertEquals(testTitle, excelSheet.title)
+        assertEquals("엑셀 시트", excelSheet.title)
         assertEquals(testTheme, excelSheet.theme)
         assertEquals("테마 B", excelSheet.theme.name)
     }

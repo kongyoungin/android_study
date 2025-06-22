@@ -1,5 +1,7 @@
 package com.example.foreducationhilt.sheet.theme
 
-class ThemeB : Theme {
+import javax.inject.Inject
+
+class ThemeB @Inject constructor() : Theme {
     override val name: String = "테마 B"
 } 
